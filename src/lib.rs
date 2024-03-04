@@ -1,3 +1,6 @@
+#![warn(clippy::pedantic)]
+
+
 /*!
 Aphelion is a 64-bit RISC instruction set architecture.
 It operates on 64-bit data and uses 32-bit wide instructions.
@@ -55,5 +58,10 @@ Modifying the status register (outside of special instructions) is illegal and w
 
 `st` is laid out like so:
 
-| 
+|
 */
+
+pub mod registers;
+
+/// DOCUMENTATION NEEDED!
+pub const TODO: () = ();
