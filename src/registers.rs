@@ -13,7 +13,7 @@ Aphelion defines sixteen 64-bit registers.
 | [`fp`](Register::Fp)                       | `14`      | frame pointer       |
 | [`st`](Register::St)                       | `15`      | status register     |
 
-## [General Purpose Register](#general-purpose-registers)s
+## General Purpose Registers
 
 Registers [`ra`](Register::Ra) through [`rk`](Register::Rk)
 can be used to store data relevant to the program.
@@ -71,14 +71,22 @@ The status register is laid out like so:
 
 where:
 
-| Key | Name | Description |
+| Key | Name | Description (with `a` and `b`) |
 | :-- | :--- | :---------- |
-| `S` | `SIGN` | `(a as i64) < 0` |
-| `Z` | `ZERO` | `z == 0` |
-| `CB` | `CARRY_BORROW` | `a + b + (C as i64) > i64::MAX `\|\|` a - b - (B as i64) < i64::MIN` |
-
+| `S`   | `SIGN`                  | `(a as i64) < 0` |
+| `Z`   | `ZERO`                  | `a == 0` |
+| `CB`  | `CARRY_BORROW`          | `a + b + (C as i64) > i64::MAX` \|\| `a - b - (B as i64) < i64::MIN` |
+| `CBU` | `CARRY_BORROW_UNSIGNED` | `a + b + (C as u64) > u64::MAX` \|\| `a - b - (B as u64) < u64::MIN` |
+| `E`   | `EQUAL`                 | `a == b` |
+| `L`   | `LESS`                  | `(a as i64) < (b as i64)` |
+| `LU`  | `LESS_UNSIGNED`         | `(a as u64) < (b as u64)` |
+| `M`   | `MODE`                  | processor mode |
+| `EF`  | `EXT_F`                 | floating point operations enabled |
+| `CI`  | `CURRENT_INST`          | copy of the current instruction's machine code |
 
 */
+
+use crate::nibble::Nibble;
 
 /**
 Registers kinds. 
@@ -119,7 +127,7 @@ pub enum Register {
     St = 0xF,
 }
 impl Register {
-    /// Convert self to u8
+    /// Convert `self` to [`u8`]
     ///
     /// # Examples
     ///
@@ -131,7 +139,7 @@ impl Register {
     #[must_use]
     pub const fn to_u8(self) -> u8 { self as u8 }
 
-    /// Attempts to convert a u8 to Self
+    /// Attempts to convert a [`u8`] to `Self`
     ///
     /// # Examples
     ///
@@ -161,6 +169,27 @@ impl Register {
             0xE => Some(Self::Fp),
             0xF => Some(Self::St),
             _ => None,
+        }
+    }
+    #[must_use]
+    pub const fn from_nibble(v: Nibble) -> Self {
+        match v {
+            Nibble::X0 => Self::Rz,
+            Nibble::X1 => Self::Ra,
+            Nibble::X2 => Self::Rb,
+            Nibble::X3 => Self::Rc,
+            Nibble::X4 => Self::Rd,
+            Nibble::X5 => Self::Re,
+            Nibble::X6 => Self::Rf,
+            Nibble::X7 => Self::Rg,
+            Nibble::X8 => Self::Rh,
+            Nibble::X9 => Self::Ri,
+            Nibble::XA => Self::Rj,
+            Nibble::XB => Self::Rk,
+            Nibble::XC => Self::Ip,
+            Nibble::XD => Self::Sp,
+            Nibble::XE => Self::Fp,
+            Nibble::XF => Self::St,
         }
     }
 }
