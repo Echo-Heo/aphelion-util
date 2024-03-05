@@ -1,7 +1,9 @@
 #![warn(clippy::pedantic)]
+//! module for the [`Nibble`] type
 
 use std::fmt::{Binary, Debug, Display, LowerExp, LowerHex, Octal, UpperExp, UpperHex};
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+/// 4-bit unsigned integer type
 pub enum Nibble {
     X0 = 0x0,
     X1 = 0x1,
@@ -21,6 +23,15 @@ pub enum Nibble {
     XF = 0xF,
 }
 impl Nibble {
+    /// Attempt to convert a [`u8`] to [`Nibble`]
+    ///
+    /// # Examples
+    /// ```
+    /// use asteroid_rs::nibble::Nibble;
+    ///
+    /// assert_eq!(Nibble::try_from_u8(0xB), Some(Nibble::XB));
+    /// assert_eq!(Nibble::try_from_u8(0x10), None);
+    /// ```
     #[must_use]
     pub const fn try_from_u8(v: u8) -> Option<Self> {
         match v {
@@ -43,6 +54,15 @@ impl Nibble {
             _ => None,
         }
     }
+    /// Convert the lower 4 bits of a [`u8`] to [`Nibble`]
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use asteroid_rs::nibble::Nibble;
+    ///
+    /// assert_eq!(Nibble::from_u8(0x1B), Nibble::XB);
+    /// ```
     #[must_use]
     pub const fn from_u8(v: u8) -> Self {
         match v & 0x0F {
@@ -65,6 +85,15 @@ impl Nibble {
             _ => unreachable!(),
         }
     }
+    /// Convert the upper 4 bits of a [`u8`] to [`Nibble`]
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use asteroid_rs::nibble::Nibble;
+    ///
+    /// assert_eq!(Nibble::from_u8_upper(0x1B), Nibble::X1);
+    /// ```
     #[must_use]
     pub const fn from_u8_upper(v: u8) -> Self {
         match v & 0xF0 {
@@ -87,38 +116,77 @@ impl Nibble {
             _ => unreachable!(),
         }
     }
+    /// Converts [`Nibble`] to [`u8`]
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use asteroid_rs::nibble::Nibble;
+    ///
+    /// assert_eq!(Nibble::X5.as_u8(), 0x05u8);
+    /// ```
     #[must_use]
-    pub const fn to_u8(self) -> u8 { self as u8 }
+    pub const fn as_u8(self) -> u8 { self as u8 }
+    /// Converts [`Nibble`] to [`u8`], bit shifted right by 4.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use asteroid_rs::nibble::Nibble;
+    ///
+    /// assert_eq!(Nibble::X5.as_u8_upper(), 0x50u8);
+    /// ```
     #[must_use]
-    pub const fn to_u8_upper(self) -> u8 { (self as u8) << 4 }
+    pub const fn as_u8_upper(self) -> u8 { (self as u8) << 4 }
+
+    /// Composes `self` as lower 4 bits and `upper` as upper 4 bits into [`u8`]
+    /// 
+    /// # Examples 
+    /// 
+    /// ```
+    /// use asteroid_rs::nibble::Nibble;
+    /// 
+    /// assert_eq!(Nibble::X9.compose(Nibble::X6), 0x69u8);
+    /// ```
+    #[must_use]
+    pub const fn compose(self, upper: Self) -> u8 { self.as_u8() | upper.as_u8_upper() }
 }
+#[doc(hidden)]
 impl Debug for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{:?}", *self as u8) }
 }
+#[doc(hidden)]
 impl Display for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{}", *self as u8) }
 }
+#[doc(hidden)]
 impl Binary for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{:b}", *self as u8) }
 }
+#[doc(hidden)]
 impl LowerExp for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{:e}", *self as u8) }
 }
+#[doc(hidden)]
 impl UpperExp for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{:E}", *self as u8) }
 }
+#[doc(hidden)]
 impl LowerHex for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{:x}", *self as u8) }
 }
+#[doc(hidden)]
 impl UpperHex for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{:X}", *self as u8) }
 }
+#[doc(hidden)]
 impl Octal for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{:o}", *self as u8) }
 }
 
 macro_rules! impl_from_nibble {
     ($type: ty) => {
+        #[doc(hidden)]
         impl From<Nibble> for $type {
             fn from(value: Nibble) -> Self { value as u8 as Self }
         }
@@ -128,3 +196,18 @@ macro_rules! impl_from_nibble {
     }
 }
 impl_from_nibble! {u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize, f32, f64}
+
+macro_rules! impl_into_nibble {
+    ($type: ty) => {
+        #[doc(hidden)]
+        impl From<$type> for Nibble {
+            fn from(value: $type) -> Self {
+                Self::from_u8(value as u8)
+            }
+        }
+    };
+    ($($type: ty),* $(,)*) => {
+        $(impl_into_nibble!{$type})*
+    }
+}
+impl_into_nibble! {u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize}

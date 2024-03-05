@@ -45,7 +45,7 @@ Registers [`sp`](Register::Sp) and [`fp`](Register::Fp) are
 the stack pointer and the frame pointer, respectively.
 The stack pointer contains the memory address of the top stack entry.
 The frame pointer contains the base address of the current stack frame.
-See [interrupts](crate::TODO) for error states.
+See [interrupts](crate::interrupt) for error states.
 
 Like all registers, [`sp`](Register::Sp) and [`fp`](Register::Fp) are
 initialized to `0` upon startup.
@@ -57,11 +57,11 @@ that involve the stack happen.
 
 The status register contains bit flags and
 information about the processor state.
-Most flags are set by the [`cmp`](crate::TODO) comparison instructions,
+Most flags are set by the [`cmp`](crate::instruction::instruction_set::InstructionSet::Cmpr) comparison instructions,
 with the exception of [`CB`](crate::TODO) and [`CBU`](crate::TODO),
-which are set by [`add`](crate::TODO) and [`sub`](crate::TODO).
+which are set by [`add`](crate::instruction::instruction_set::InstructionSet::Addr) and [`sub`](crate::instruction::instruction_set::InstructionSet::Subr).
 Modifying the status register (outside of special instructions) is
-illegal and will trigger an [`Invalid Instruction`](crate::TODO) interrupt.
+illegal and will trigger an [`Invalid Instruction`](crate::interrupt::Interrupt::INVALID_OPERATION) interrupt.
 
 The status register is laid out like so:
 
@@ -86,10 +86,12 @@ where:
 
 */
 
+use std::fmt::Display;
+
 use crate::nibble::Nibble;
 
 /**
-Registers kinds. 
+Registers kinds.
 */
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Register {
@@ -127,7 +129,7 @@ pub enum Register {
     St = 0xF,
 }
 impl Register {
-    /// Convert `self` to [`u8`]
+    /// Convert a [`Register`] to [`u8`]
     ///
     /// # Examples
     ///
@@ -139,7 +141,7 @@ impl Register {
     #[must_use]
     pub const fn to_u8(self) -> u8 { self as u8 }
 
-    /// Attempts to convert a [`u8`] to `Self`
+    /// Attempt to convert a [`u8`] to [`Register`]
     ///
     /// # Examples
     ///
@@ -192,4 +194,48 @@ impl Register {
             Nibble::XF => Self::St,
         }
     }
+    #[must_use]
+    pub const fn as_nibble(self) -> Nibble {
+        match self {
+            Self::Rz => Nibble::X0,
+            Self::Ra => Nibble::X1,
+            Self::Rb => Nibble::X2,
+            Self::Rc => Nibble::X3,
+            Self::Rd => Nibble::X4,
+            Self::Re => Nibble::X5,
+            Self::Rf => Nibble::X6,
+            Self::Rg => Nibble::X7,
+            Self::Rh => Nibble::X8,
+            Self::Ri => Nibble::X9,
+            Self::Rj => Nibble::XA,
+            Self::Rk => Nibble::XB,
+            Self::Ip => Nibble::XC,
+            Self::Sp => Nibble::XD,
+            Self::Fp => Nibble::XE,
+            Self::St => Nibble::XF,
+        }
+    }
+    const fn string(self) -> &'static str {
+        match self {
+            Self::Rz => "rz",
+            Self::Ra => "ra",
+            Self::Rb => "rb",
+            Self::Rc => "rc",
+            Self::Rd => "rd",
+            Self::Re => "re",
+            Self::Rf => "rf",
+            Self::Rg => "rg",
+            Self::Rh => "rh",
+            Self::Ri => "ri",
+            Self::Rj => "rj",
+            Self::Rk => "rk",
+            Self::Ip => "ip",
+            Self::Sp => "sp",
+            Self::Fp => "fp",
+            Self::St => "st",
+        }
+    }
+}
+impl Display for Register {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self.string()) }
 }

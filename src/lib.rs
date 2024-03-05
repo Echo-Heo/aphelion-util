@@ -1,5 +1,5 @@
 #![warn(clippy::pedantic)]
-
+#![allow(clippy::unusual_byte_groupings)]
 
 /*!
 Aphelion is a 64-bit RISC instruction set architecture.
@@ -10,7 +10,11 @@ succumbing to paralyzing minimalism or unwieldy complexity.
 
 pub mod registers;
 pub mod nibble;
-pub mod instruction_set;
+pub mod instruction;
+pub mod interrupt;
+pub mod io;
+// TODO: useful operations here
+pub mod operation;
 
 /// DOCUMENTATION NEEDED!
 pub const TODO: () = ();
