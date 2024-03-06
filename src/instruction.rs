@@ -244,27 +244,6 @@ pub mod encoding {
 pub mod instruction_set {
     /*!
     # Instruction Set
-
-    ## System Control
-
-    | Mnemonic | Encoding | Format | Description |
-    | :------- | :------- | :----- | :---------- |
-    | `nop`      |                   |     | no operation, expands to `add rz, rz, rz` |
-    | `inv`      |                   |     | invalid opcode, expands to `int 2` |
-    | `int imm8` | `00 ── imm8 0x01` | `F` | trigger interrupt `imm8` (see [Interrputs](crate::interrupt)) |
-    | `iret`     | `01 ── ──── 0x01` | `F` | return from interrupt |
-    | `ires`     | `02 ── ──── 0x01` | `F` | resolve interrupt |
-    | `usr rd`   | `03 rd ──── 0x01` | `F` | enter user mode and jump to address in `rd`. `rd` should hold a virtual address. |
-
-    ## Input & Output
-    | Mnemonic | Encoding | Format | Description |
-    | :------- | :------- | :----- | :---------- |
-    | `out  rd/imm16, rs` | | | Assembler alias for `outr`, `outi` |
-    | `in   rd, rs/imm16` | | | Assembler alias for `inr`,  `ini`  |
-    | `outr rd, rs`    | `rd rs ───── 0x02` | `M` | output data in `rs` to port `rd` |
-    | `outi imm16, rs` | `── rs imm16 0x03` | `M` | output data in `rs` to port `imm16` |
-
-    TODO: rest of the documentation
     */
     use std::fmt::Display;
 
