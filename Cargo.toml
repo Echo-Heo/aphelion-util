@@ -4,6 +4,11 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Echo Heo <jeannebluemonheo@gmail.com>"]
 description = "Library for types and traits for Aphelion instruction set architecture"
+license = "MIT"
+keywords = ["aphelion"]
+categories = ["emulators", "compilers"]
+exclude = ["/rustfmt.toml"]
+repository = "https://github.com/Echo-Heo/aphelion-util"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
