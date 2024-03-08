@@ -124,10 +124,10 @@ impl Nibble {
     /// ```
     /// use aphelion_util::nibble::Nibble;
     ///
-    /// assert_eq!(Nibble::X5.as_u8(), 0x05u8);
+    /// assert_eq!(Nibble::X5.to_u8(), 0x05u8);
     /// ```
     #[must_use]
-    pub const fn as_u8(self) -> u8 { self as u8 }
+    pub const fn to_u8(self) -> u8 { self as u8 }
     /// Converts [`Nibble`] to [`u8`], bit shifted right by 4.
     ///
     /// # Examples
@@ -135,10 +135,10 @@ impl Nibble {
     /// ```
     /// use aphelion_util::nibble::Nibble;
     ///
-    /// assert_eq!(Nibble::X5.as_u8_upper(), 0x50u8);
+    /// assert_eq!(Nibble::X5.to_u8_upper(), 0x50u8);
     /// ```
     #[must_use]
-    pub const fn as_u8_upper(self) -> u8 { (self as u8) << 4 }
+    pub const fn to_u8_upper(self) -> u8 { (self as u8) << 4 }
 
     /// Composes `self` as lower 4 bits and `upper` as upper 4 bits into [`u8`]
     ///
@@ -150,7 +150,7 @@ impl Nibble {
     /// assert_eq!(Nibble::X9.compose(Nibble::X6), 0x69u8);
     /// ```
     #[must_use]
-    pub const fn compose(self, upper: Self) -> u8 { self.as_u8() | upper.as_u8_upper() }
+    pub const fn compose(self, upper: Self) -> u8 { self.to_u8() | upper.to_u8_upper() }
 
     #[must_use]
     pub const fn to_bool(self) -> bool { !matches!(self, Self::X0) }

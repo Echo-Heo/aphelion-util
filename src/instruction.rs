@@ -233,7 +233,7 @@ pub mod encoding {
         #[must_use]
         pub const fn to_u32(self, opcode: u8) -> u32 {
             let B { imm, func } = self;
-            (opcode as u32) | (imm << 8) | ((func.as_u8() as u32) << 28)
+            (opcode as u32) | (imm << 8) | ((func.to_u8() as u32) << 28)
         }
     }
 }
@@ -945,19 +945,19 @@ pub mod instruction_set {
                 Self::Int { imm8 } => F { imm: imm8.0 as u16, func: Nibble::X0, ..F::DFLT }.to_u32(opcode),
                 Self::Iret => F { func: Nibble::X1, ..F::DFLT }.to_u32(opcode),
                 Self::Ires => F { func: Nibble::X2, ..F::DFLT }.to_u32(opcode),
-                Self::Usr { rd } => F { func: Nibble::X3, rde: rd.as_nibble(), ..F::DFLT }.to_u32(opcode),
-                Self::Li { rd, func, imm } => F { rde: rd.as_nibble(), func: func.to_nibble(), imm }.to_u32(opcode),
-                Self::Cmpi { r1, s, imm } => F { rde: r1.as_nibble(), func: Nibble::from_bool(s), imm }.to_u32(opcode),
+                Self::Usr { rd } => F { func: Nibble::X3, rde: rd.to_nibble(), ..F::DFLT }.to_u32(opcode),
+                Self::Li { rd, func, imm } => F { rde: rd.to_nibble(), func: func.to_nibble(), imm }.to_u32(opcode),
+                Self::Cmpi { r1, s, imm } => F { rde: r1.to_nibble(), func: Nibble::from_bool(s), imm }.to_u32(opcode),
 
                 /* M */
-                Self::Outr { rd, rs } | Self::Inr { rd, rs } => M { rde: rd.as_nibble(), rs1: rs.as_nibble(), ..M::DFLT }.to_u32(opcode),
-                Self::Outi { imm16, rs } => M { rs1: rs.as_nibble(), imm: imm16.0, ..M::DFLT }.to_u32(opcode),
-                Self::Ini { imm16, rd } => M { rde: rd.as_nibble(), imm: imm16.0, ..M::DFLT }.to_u32(opcode),
-                Self::Jal { rs, imm16 } => M { rs1: rs.as_nibble(), imm: imm16, ..M::DFLT }.to_u32(opcode),
-                Self::Jalr { rd, rs, imm16 } => M { rde: rd.as_nibble(), rs1: rs.as_nibble(), imm: imm16 }.to_u32(opcode),
-                Self::Retr { rs } | Self::Push { rs } => M { rs1: rs.as_nibble(), ..M::DFLT }.to_u32(opcode),
-                Self::Pop { rd } => M { rde: rd.as_nibble(), ..M::DFLT }.to_u32(opcode),
-                Self::Cmpr { r1, r2 } => M { rde: r1.as_nibble(), rs1: r2.as_nibble(), ..M::DFLT }.to_u32(opcode),
+                Self::Outr { rd, rs } | Self::Inr { rd, rs } => M { rde: rd.to_nibble(), rs1: rs.to_nibble(), ..M::DFLT }.to_u32(opcode),
+                Self::Outi { imm16, rs } => M { rs1: rs.to_nibble(), imm: imm16.0, ..M::DFLT }.to_u32(opcode),
+                Self::Ini { imm16, rd } => M { rde: rd.to_nibble(), imm: imm16.0, ..M::DFLT }.to_u32(opcode),
+                Self::Jal { rs, imm16 } => M { rs1: rs.to_nibble(), imm: imm16, ..M::DFLT }.to_u32(opcode),
+                Self::Jalr { rd, rs, imm16 } => M { rde: rd.to_nibble(), rs1: rs.to_nibble(), imm: imm16 }.to_u32(opcode),
+                Self::Retr { rs } | Self::Push { rs } => M { rs1: rs.to_nibble(), ..M::DFLT }.to_u32(opcode),
+                Self::Pop { rd } => M { rde: rd.to_nibble(), ..M::DFLT }.to_u32(opcode),
+                Self::Cmpr { r1, r2 } => M { rde: r1.to_nibble(), rs1: r2.to_nibble(), ..M::DFLT }.to_u32(opcode),
                 Self::Addi { rd, r1, imm16 }
                 | Self::Subi { rd, r1, imm16 }
                 | Self::Imuli { rd, r1, imm16 }
@@ -973,7 +973,7 @@ pub mod instruction_set {
                 | Self::Shli { rd, r1, imm16 }
                 | Self::Asri { rd, r1, imm16 }
                 | Self::Lsri { rd, r1, imm16 }
-                | Self::Biti { rd, r1, imm16 } => M { rde: rd.as_nibble(), rs1: r1.as_nibble(), imm: imm16 }.to_u32(opcode),
+                | Self::Biti { rd, r1, imm16 } => M { rde: rd.to_nibble(), rs1: r1.to_nibble(), imm: imm16 }.to_u32(opcode),
 
                 /* B */
                 Self::Branch { cc, imm20 } => B { func: cc.to_nibble(), imm: imm20 }.to_u32(opcode),
@@ -990,11 +990,11 @@ pub mod instruction_set {
                 | Self::Sh { rd, rs, rn, sh, off }
                 | Self::Sq { rd, rs, rn, sh, off }
                 | Self::Sb { rd, rs, rn, sh, off } => {
-                    E { rde: rd.as_nibble(), rs1: rs.as_nibble(), rs2: rn.as_nibble(), func: sh, imm: off }.to_u32(opcode)
+                    E { rde: rd.to_nibble(), rs1: rs.to_nibble(), rs2: rn.to_nibble(), func: sh, imm: off }.to_u32(opcode)
                 }
-                Self::Fcmp { r1, r2, p } => E { rs1: r1.as_nibble(), rs2: r2.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode),
+                Self::Fcmp { r1, r2, p } => E { rs1: r1.to_nibble(), rs2: r2.to_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode),
                 Self::Fto { rd, rs, p } | Self::Ffrom { rd, rs, p } | Self::Fneg { rd, rs, p } | Self::Fabs { rd, rs, p } => {
-                    E { rde: rd.as_nibble(), rs1: rs.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode)
+                    E { rde: rd.to_nibble(), rs1: rs.to_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode)
                 }
                 Self::Fadd { rd, r1, r2, p }
                 | Self::Fsub { rd, r1, r2, p }
@@ -1003,12 +1003,12 @@ pub mod instruction_set {
                 | Self::Fma { rd, r1, r2, p }
                 | Self::Fmin { rd, r1, r2, p }
                 | Self::Fmax { rd, r1, r2, p } => {
-                    E { rde: rd.as_nibble(), rs1: r1.as_nibble(), rs2: r2.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode)
+                    E { rde: rd.to_nibble(), rs1: r1.to_nibble(), rs2: r2.to_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode)
                 }
                 Self::Fsqrt { rd, r1, p } | Self::Fsat { rd, r1, p } | Self::Fnan { rd, r1, p } => {
-                    E { rde: rd.as_nibble(), rs1: r1.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode)
+                    E { rde: rd.to_nibble(), rs1: r1.to_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode)
                 }
-                Self::Fcnv { rd, r1, p } => E { rde: rd.as_nibble(), rs1: r1.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode),
+                Self::Fcnv { rd, r1, p } => E { rde: rd.to_nibble(), rs1: r1.to_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode),
 
                 /* R */
                 Self::Addr { rd, r1, r2 }
@@ -1026,7 +1026,7 @@ pub mod instruction_set {
                 | Self::Shlr { rd, r1, r2 }
                 | Self::Asrr { rd, r1, r2 }
                 | Self::Lsrr { rd, r1, r2 }
-                | Self::Bitr { rd, r1, r2 } => R { rde: rd.as_nibble(), rs1: r1.as_nibble(), rs2: r2.as_nibble(), ..R::DFLT }.to_u32(opcode),
+                | Self::Bitr { rd, r1, r2 } => R { rde: rd.to_nibble(), rs1: r1.to_nibble(), rs2: r2.to_nibble(), ..R::DFLT }.to_u32(opcode),
             }
         }
         #[must_use]

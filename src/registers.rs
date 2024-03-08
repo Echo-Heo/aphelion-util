@@ -195,7 +195,7 @@ impl Register {
         }
     }
     #[must_use]
-    pub const fn as_nibble(self) -> Nibble {
+    pub const fn to_nibble(self) -> Nibble {
         match self {
             Self::Rz => Nibble::X0,
             Self::Ra => Nibble::X1,
