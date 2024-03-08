@@ -1,1 +1,1 @@
-just stuff for aphelion stuff
+Library for types and traits for [Aphelion](https://github.com/orbit-systems/aphelion/)

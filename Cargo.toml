@@ -2,10 +2,11 @@
 name = "aphelion-util"
 version = "0.1.0"
 edition = "2021"
+authors = ["Echo Heo <jeannebluemonheo@gmail.com>"]
+description = "Library for types and traits for Aphelion instruction set architecture"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 half = { version = "2.4.0", features = ["num-traits"] }
 num-traits = "0.2.18"
-
