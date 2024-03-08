@@ -4,10 +4,7 @@
 /*!
 ![Aphelion](https://github.com/orbit-systems/aphelion/blob/main/readme-assets/aphelion64.png?raw=true)
 
-Aphelion is a 64-bit RISC instruction set architecture.
-It operates on 64-bit data and uses 32-bit wide instructions.
-Aphelion aims to be a rich and featureful architecture without
-succumbing to paralyzing minimalism or unwieldy complexity.
+TODO: put some good documentation thats not just copy pasted from the typst doc...
 */
 
 pub mod registers;
@@ -19,4 +16,5 @@ pub mod io;
 pub mod helper;
 
 /// DOCUMENTATION NEEDED!
+#[doc(hidden)]
 pub const TODO: () = ();

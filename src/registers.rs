@@ -134,7 +134,7 @@ impl Register {
     /// # Examples
     ///
     /// ```
-    /// use asteroid_rs::registers::Register;
+    /// use aphelion_util::registers::Register;
     ///
     /// assert_eq!(Register::Sp.to_u8(), 0xDu8);
     /// ```
@@ -146,7 +146,7 @@ impl Register {
     /// # Examples
     ///
     /// ```
-    /// use asteroid_rs::registers::Register;
+    /// use aphelion_util::registers::Register;
     ///
     /// assert_eq!(Register::try_from_u8(0xDu8), Some(Register::Sp));
     /// assert_eq!(Register::try_from_u8(0x10u8), None);

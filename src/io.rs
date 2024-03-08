@@ -5,5 +5,4 @@ impl Port {
     pub const IO: Self = Self(1);
     pub const MMU: Self = Self(2);
     pub const SYSTIMER: Self = Self(3);
-    
 }

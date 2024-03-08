@@ -2,9 +2,10 @@
 //! module for the [`Nibble`] type
 
 use std::fmt::{Binary, Debug, Display, LowerExp, LowerHex, Octal, UpperExp, UpperHex};
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 /// 4-bit unsigned integer type
 pub enum Nibble {
+    #[default]
     X0 = 0x0,
     X1 = 0x1,
     X2 = 0x2,
@@ -27,7 +28,7 @@ impl Nibble {
     ///
     /// # Examples
     /// ```
-    /// use asteroid_rs::nibble::Nibble;
+    /// use aphelion_util::nibble::Nibble;
     ///
     /// assert_eq!(Nibble::try_from_u8(0xB), Some(Nibble::XB));
     /// assert_eq!(Nibble::try_from_u8(0x10), None);
@@ -59,7 +60,7 @@ impl Nibble {
     /// # Examples
     ///
     /// ```
-    /// use asteroid_rs::nibble::Nibble;
+    /// use aphelion_util::nibble::Nibble;
     ///
     /// assert_eq!(Nibble::from_u8(0x1B), Nibble::XB);
     /// ```
@@ -90,7 +91,7 @@ impl Nibble {
     /// # Examples
     ///
     /// ```
-    /// use asteroid_rs::nibble::Nibble;
+    /// use aphelion_util::nibble::Nibble;
     ///
     /// assert_eq!(Nibble::from_u8_upper(0x1B), Nibble::X1);
     /// ```
@@ -121,7 +122,7 @@ impl Nibble {
     /// # Examples
     ///
     /// ```
-    /// use asteroid_rs::nibble::Nibble;
+    /// use aphelion_util::nibble::Nibble;
     ///
     /// assert_eq!(Nibble::X5.as_u8(), 0x05u8);
     /// ```
@@ -132,7 +133,7 @@ impl Nibble {
     /// # Examples
     ///
     /// ```
-    /// use asteroid_rs::nibble::Nibble;
+    /// use aphelion_util::nibble::Nibble;
     ///
     /// assert_eq!(Nibble::X5.as_u8_upper(), 0x50u8);
     /// ```
@@ -140,16 +141,27 @@ impl Nibble {
     pub const fn as_u8_upper(self) -> u8 { (self as u8) << 4 }
 
     /// Composes `self` as lower 4 bits and `upper` as upper 4 bits into [`u8`]
-    /// 
-    /// # Examples 
-    /// 
+    ///
+    /// # Examples
+    ///
     /// ```
-    /// use asteroid_rs::nibble::Nibble;
-    /// 
+    /// use aphelion_util::nibble::Nibble;
+    ///
     /// assert_eq!(Nibble::X9.compose(Nibble::X6), 0x69u8);
     /// ```
     #[must_use]
     pub const fn compose(self, upper: Self) -> u8 { self.as_u8() | upper.as_u8_upper() }
+
+    #[must_use]
+    pub const fn to_bool(self) -> bool { !matches!(self, Self::X0) }
+    #[must_use]
+    pub const fn from_bool(v: bool) -> Self {
+        if v {
+            Self::X1
+        } else {
+            Self::X0
+        }
+    }
 }
 #[doc(hidden)]
 impl Debug for Nibble {

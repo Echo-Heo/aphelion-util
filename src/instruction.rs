@@ -26,7 +26,7 @@ impl Instruction {
     /// # Examples
     ///
     /// ```
-    /// use asteroid_rs::{instruction::Instruction, nibble::Nibble};
+    /// use aphelion_util::{instruction::Instruction, nibble::Nibble};
     ///
     /// assert_eq!(Instruction(0x01234567).nth_nibble(1), Nibble::X6);
     /// ```
@@ -96,7 +96,7 @@ pub mod encoding {
     use crate::nibble::Nibble;
     /// Instruction format type E, for destructuring.
     /// Opcode is omitted.
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, Default)]
     pub struct E {
         /// `8..15` (8 bits)
         pub imm:  u8,
@@ -110,16 +110,14 @@ pub mod encoding {
         pub rde:  Nibble,
     }
     impl E {
+        pub const DFLT: Self = Self::new(0, Nibble::X0, Nibble::X0, Nibble::X0, Nibble::X0);
+        #[must_use]
+        pub const fn new(imm: u8, func: Nibble, rs2: Nibble, rs1: Nibble, rde: Nibble) -> Self { Self { imm, func, rs2, rs1, rde } }
+
         #[must_use]
         pub const fn from_u32(value: u32) -> Self {
             let [_, b1, b2, b3] = value.to_le_bytes();
-            E {
-                imm:  b1,
-                func: Nibble::from_u8(b2),
-                rs2:  Nibble::from_u8_upper(b2),
-                rs1:  Nibble::from_u8(b3),
-                rde:  Nibble::from_u8_upper(b3),
-            }
+            E { imm: b1, func: Nibble::from_u8(b2), rs2: Nibble::from_u8_upper(b2), rs1: Nibble::from_u8(b3), rde: Nibble::from_u8_upper(b3) }
         }
         #[must_use]
         pub const fn to_u32(self, opcode: u8) -> u32 {
@@ -129,7 +127,7 @@ pub mod encoding {
     }
     /// Instruction format type R, for destructuring.
     /// Opcode is omitted.
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, Default)]
     pub struct R {
         /// `8..19` (12 bits)
         pub imm: u16,
@@ -141,15 +139,14 @@ pub mod encoding {
         pub rde: Nibble,
     }
     impl R {
+        pub const DFLT: Self = Self::new(0, Nibble::X0, Nibble::X0, Nibble::X0);
+        #[must_use]
+        pub const fn new(imm: u16, rs2: Nibble, rs1: Nibble, rde: Nibble) -> Self { Self { imm, rs2, rs1, rde } }
+
         #[must_use]
         pub const fn from_u32(value: u32) -> Self {
             let [.., b2, b3] = value.to_le_bytes();
-            R {
-                imm: ((value >> 8) & 0x0FFF) as u16,
-                rs2: Nibble::from_u8_upper(b2),
-                rs1: Nibble::from_u8(b3),
-                rde: Nibble::from_u8_upper(b3),
-            }
+            R { imm: ((value >> 8) & 0x0FFF) as u16, rs2: Nibble::from_u8_upper(b2), rs1: Nibble::from_u8(b3), rde: Nibble::from_u8_upper(b3) }
         }
         #[must_use]
         pub const fn to_u32(self, opcode: u8) -> u32 {
@@ -160,7 +157,7 @@ pub mod encoding {
     }
     /// Instruction format type M, for destructuring.
     /// Opcode is omitted.
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, Default)]
     pub struct M {
         /// `8..23` (16 bits)
         pub imm: u16,
@@ -170,14 +167,14 @@ pub mod encoding {
         pub rde: Nibble,
     }
     impl M {
+        pub const DFLT: Self = Self::new(0, Nibble::X0, Nibble::X0);
+        #[must_use]
+        pub const fn new(imm: u16, rs1: Nibble, rde: Nibble) -> Self { Self { imm, rs1, rde } }
+
         #[must_use]
         pub const fn from_u32(value: u32) -> Self {
             let [_, b1, b2, b3] = value.to_le_bytes();
-            M {
-                imm: u16::from_le_bytes([b1, b2]),
-                rs1: Nibble::from_u8(b3),
-                rde: Nibble::from_u8_upper(b3),
-            }
+            M { imm: u16::from_le_bytes([b1, b2]), rs1: Nibble::from_u8(b3), rde: Nibble::from_u8_upper(b3) }
         }
         #[must_use]
         pub const fn to_u32(self, opcode: u8) -> u32 {
@@ -188,7 +185,7 @@ pub mod encoding {
     }
     /// Instruction format type F, for destructuring.
     /// Opcode is omitted.
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, Default)]
     pub struct F {
         /// `8..23` (16 bits)
         pub imm:  u16,
@@ -198,14 +195,14 @@ pub mod encoding {
         pub rde:  Nibble,
     }
     impl F {
+        pub const DFLT: Self = Self::new(0, Nibble::X0, Nibble::X0);
+        #[must_use]
+        pub const fn new(imm: u16, func: Nibble, rde: Nibble) -> Self { Self { imm, func, rde } }
+
         #[must_use]
         pub const fn from_u32(value: u32) -> Self {
             let [_, b1, b2, b3] = value.to_le_bytes();
-            F {
-                imm:  u16::from_le_bytes([b1, b2]),
-                func: Nibble::from_u8(b3),
-                rde:  Nibble::from_u8_upper(b3),
-            }
+            F { imm: u16::from_le_bytes([b1, b2]), func: Nibble::from_u8(b3), rde: Nibble::from_u8_upper(b3) }
         }
         #[must_use]
         pub const fn to_u32(self, opcode: u8) -> u32 {
@@ -216,7 +213,7 @@ pub mod encoding {
     }
     /// Instruction format type B, for destructuring.
     /// Opcode is omitted.
-    #[derive(Debug, Clone, Copy)]
+    #[derive(Debug, Clone, Copy, Default)]
     pub struct B {
         /// `8..27` (20 bits)
         pub imm:  u32,
@@ -224,13 +221,14 @@ pub mod encoding {
         pub func: Nibble,
     }
     impl B {
+        pub const DFLT: Self = Self::new(0, Nibble::X0);
+        #[must_use]
+        pub const fn new(imm: u32, func: Nibble) -> Self { Self { imm, func } }
+
         #[must_use]
         pub const fn from_u32(value: u32) -> Self {
             let [.., b3] = value.to_le_bytes();
-            B {
-                imm:  (value >> 8) & 0x000F_FFFF,
-                func: Nibble::from_u8_upper(b3),
-            }
+            B { imm: (value >> 8) & 0x000F_FFFF, func: Nibble::from_u8_upper(b3) }
         }
         #[must_use]
         pub const fn to_u32(self, opcode: u8) -> u32 {
@@ -323,6 +321,24 @@ pub mod instruction_set {
                 Self::Bgtu => "bgtu",
             }
         }
+        #[must_use]
+        pub const fn to_nibble(self) -> Nibble {
+            match self {
+                Self::Bra => Nibble::X0,
+                Self::Beq => Nibble::X1,
+                Self::Bez => Nibble::X2,
+                Self::Blt => Nibble::X3,
+                Self::Ble => Nibble::X4,
+                Self::Bltu => Nibble::X5,
+                Self::Bleu => Nibble::X6,
+                Self::Bne => Nibble::X9,
+                Self::Bnz => Nibble::XA,
+                Self::Bge => Nibble::XB,
+                Self::Bgt => Nibble::XC,
+                Self::Bgeu => Nibble::XD,
+                Self::Bgtu => Nibble::XE,
+            }
+        }
     }
     impl Display for BranchCond {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self.string()) }
@@ -377,6 +393,19 @@ pub mod instruction_set {
                 Self::Ltuis => "ltuis",
             }
         }
+        #[must_use]
+        pub const fn to_nibble(self) -> Nibble {
+            match self {
+                Self::Lli => Nibble::X0,
+                Self::Llis => Nibble::X1,
+                Self::Lui => Nibble::X2,
+                Self::Luis => Nibble::X3,
+                Self::Lti => Nibble::X4,
+                Self::Ltis => Nibble::X5,
+                Self::Ltui => Nibble::X6,
+                Self::Ltuis => Nibble::X7,
+            }
+        }
     }
     impl Display for LiType {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self.string()) }
@@ -406,6 +435,14 @@ pub mod instruction_set {
                 _ => None,
             }
         }
+        #[must_use]
+        pub const fn to_nibble(self) -> Nibble {
+            match self {
+                Self::F16 => Nibble::X0,
+                Self::F32 => Nibble::X1,
+                Self::F64 => Nibble::X2,
+            }
+        }
     }
     impl Display for FloatPrecision {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -424,14 +461,25 @@ pub mod instruction_set {
     impl FloatCastType {
         #[must_use]
         pub const fn try_from_nibble(value: Nibble) -> Option<Self> {
-            if let (Some(to), Some(from)) = (
-                FloatPrecision::try_from_u8((value as u8) & 0x11),
-                FloatPrecision::try_from_u8((value as u8) >> 2),
-            ) {
+            if let (Some(to), Some(from)) = (FloatPrecision::try_from_u8((value as u8) & 0x11), FloatPrecision::try_from_u8((value as u8) >> 2)) {
                 Some(Self { to, from })
             } else {
                 None
             }
+        }
+        #[must_use]
+        pub const fn to_nibble(self) -> Nibble {
+            Nibble::from_u8(
+                match self.to {
+                    FloatPrecision::F16 => 0,
+                    FloatPrecision::F32 => 1,
+                    FloatPrecision::F64 => 2,
+                } + match self.from {
+                    FloatPrecision::F16 => 0,
+                    FloatPrecision::F32 => 4,
+                    FloatPrecision::F64 => 8,
+                },
+            )
         }
     }
     impl Display for FloatCastType {
@@ -486,93 +534,27 @@ pub mod instruction_set {
         /// load immediate; see [`LiType`]
         Li { rd: Register, func: LiType, imm: u16 },
         /// `rd ← mem[rs + (off as i64) + (rn << sh)]`
-        Lw {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Lw { rd: Register, rs: Register, rn: Register, sh: Nibble, off: u8 },
         /// `rd[31..0] ← mem[rs + (off as i64) + (rn << sh)]`
-        Lh {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Lh { rd: Register, rs: Register, rn: Register, sh: Nibble, off: u8 },
         /// `rd ← mem[rs + (off as i64) + (rn << sh)]`
-        Lhs {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Lhs { rd: Register, rs: Register, rn: Register, sh: Nibble, off: u8 },
         /// `rd[15..0] ← mem[rs + (off as i64) + (rn << sh)]`
-        Lq {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Lq { rd: Register, rs: Register, rn: Register, sh: Nibble, off: u8 },
         /// `rd ← mem[rs + (off as i64) + (rn << sh)]`
-        Lqs {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Lqs { rd: Register, rs: Register, rn: Register, sh: Nibble, off: u8 },
         /// `rd[7..0] ← mem[rs + (off as i64) + (rn << sh)]`
-        Lb {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Lb { rd: Register, rs: Register, rn: Register, sh: Nibble, off: u8 },
         /// `rd ← mem[rs + (off as i64) + (rn << sh)]`
-        Lbs {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Lbs { rd: Register, rs: Register, rn: Register, sh: Nibble, off: u8 },
         /// `mem[rs + off + (rs << sh)] ← (rd as i64)`
-        Sw {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Sw { rs: Register, off: u8, rn: Register, sh: Nibble, rd: Register },
         /// `mem[rs + off + (rs << sh)] ← (rd as i32)`
-        Sh {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Sh { rs: Register, off: u8, rn: Register, sh: Nibble, rd: Register },
         /// `mem[rs + off + (rs << sh)] ← (rd as i16)`
-        Sq {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Sq { rs: Register, off: u8, rn: Register, sh: Nibble, rd: Register },
         /// `mem[rs + off + (rs << sh)] ← (rd as i8)`
-        Sb {
-            rd:  Register,
-            rs:  Register,
-            rn:  Register,
-            sh:  Nibble,
-            off: u8,
-        },
+        Sb { rs: Register, off: u8, rn: Register, sh: Nibble, rd: Register },
 
         // Comparisons
         /// compare and set flags (see [status register](crate::registers#st--status-register))
@@ -662,56 +644,21 @@ pub mod instruction_set {
         /// `rd ← |rs|`
         Fabs { rd: Register, rs: Register, p: FloatPrecision },
         /// `rd ← r1 + r2`
-        Fadd {
-            rd: Register,
-            r1: Register,
-            r2: Register,
-            p:  FloatPrecision,
-        },
+        Fadd { rd: Register, r1: Register, r2: Register, p: FloatPrecision },
         /// `rd ← r1 - r2`
-        Fsub {
-            rd: Register,
-            r1: Register,
-            r2: Register,
-            p:  FloatPrecision,
-        },
+        Fsub { rd: Register, r1: Register, r2: Register, p: FloatPrecision },
         /// `rd ← r1 × r2`
-        Fmul {
-            rd: Register,
-            r1: Register,
-            r2: Register,
-            p:  FloatPrecision,
-        },
+        Fmul { rd: Register, r1: Register, r2: Register, p: FloatPrecision },
         /// `rd ← r1 ÷ r2`
-        Fdiv {
-            rd: Register,
-            r1: Register,
-            r2: Register,
-            p:  FloatPrecision,
-        },
+        Fdiv { rd: Register, r1: Register, r2: Register, p: FloatPrecision },
         /// `rd +← r1 × r2`
-        Fma {
-            rd: Register,
-            r1: Register,
-            r2: Register,
-            p:  FloatPrecision,
-        },
+        Fma { rd: Register, r1: Register, r2: Register, p: FloatPrecision },
         /// `rd ← √r1`
         Fsqrt { rd: Register, r1: Register, p: FloatPrecision },
         /// `rd ← min(r1, r2)`
-        Fmin {
-            rd: Register,
-            r1: Register,
-            r2: Register,
-            p:  FloatPrecision,
-        },
+        Fmin { rd: Register, r1: Register, r2: Register, p: FloatPrecision },
         /// `rd ← max(r1, r2)`
-        Fmax {
-            rd: Register,
-            r1: Register,
-            r2: Register,
-            p:  FloatPrecision,
-        },
+        Fmax { rd: Register, r1: Register, r2: Register, p: FloatPrecision },
         /// `rd ← ceil(r1)`
         Fsat { rd: Register, r1: Register, p: FloatPrecision },
         /// `rd ← cast(r1)`
@@ -766,18 +713,11 @@ pub mod instruction_set {
                 }
                 0x0A => {
                     let B { imm, func } = i.b();
-                    Self::Branch {
-                        cc:    BranchCond::try_from_nibble(func)?,
-                        imm20: imm,
-                    }
+                    Self::Branch { cc: BranchCond::try_from_nibble(func)?, imm20: imm }
                 }
                 // Stack Operations
-                0x0B => Self::Push {
-                    rs: Register::from_nibble(i.m().rs1),
-                },
-                0x0C => Self::Pop {
-                    rd: Register::from_nibble(i.m().rde),
-                },
+                0x0B => Self::Push { rs: Register::from_nibble(i.m().rs1) },
+                0x0C => Self::Pop { rd: Register::from_nibble(i.m().rde) },
                 0x0D => Self::Enter,
                 0x0E => Self::Leave,
                 // Data Flow
@@ -788,13 +728,7 @@ pub mod instruction_set {
                     Self::Li { rd, func, imm }
                 }
                 opcode @ 0x11..=0x1B => {
-                    let E {
-                        imm: off,
-                        func: sh,
-                        rs2,
-                        rs1,
-                        rde,
-                    } = i.e();
+                    let E { imm: off, func: sh, rs2, rs1, rde } = i.e();
                     let rn = Register::from_nibble(rs2);
                     let rs = Register::from_nibble(rs1);
                     let rd = Register::from_nibble(rde);
@@ -911,6 +845,192 @@ pub mod instruction_set {
             };
             Some(res)
         }
+        #[must_use]
+        pub const fn opcode(self) -> u8 {
+            match self {
+                Self::Int { .. } | Self::Iret | Self::Ires | Self::Usr { .. } => 0x01,
+
+                Self::Outr { .. } => 0x02,
+                Self::Outi { .. } => 0x03,
+                Self::Inr { .. } => 0x04,
+                Self::Ini { .. } => 0x05,
+
+                Self::Jal { .. } => 0x06,
+                Self::Jalr { .. } => 0x07,
+                Self::Ret => 0x08,
+                Self::Retr { .. } => 0x09,
+                Self::Branch { .. } => 0x0A,
+
+                Self::Push { .. } => 0x0B,
+                Self::Pop { .. } => 0x0C,
+                Self::Enter => 0x0D,
+                Self::Leave => 0x0E,
+
+                Self::Li { .. } => 0x10,
+                Self::Lw { .. } => 0x11,
+                Self::Lh { .. } => 0x12,
+                Self::Lhs { .. } => 0x13,
+                Self::Lq { .. } => 0x14,
+                Self::Lqs { .. } => 0x15,
+                Self::Lb { .. } => 0x16,
+                Self::Lbs { .. } => 0x17,
+                Self::Sw { .. } => 0x18,
+                Self::Sh { .. } => 0x19,
+                Self::Sq { .. } => 0x1A,
+                Self::Sb { .. } => 0x1B,
+
+                Self::Cmpr { .. } => 0x1E,
+                Self::Cmpi { .. } => 0x1F,
+
+                Self::Addr { .. } => 0x20,
+                Self::Addi { .. } => 0x21,
+                Self::Subr { .. } => 0x22,
+                Self::Subi { .. } => 0x23,
+                Self::Imulr { .. } => 0x24,
+                Self::Imuli { .. } => 0x25,
+                Self::Idivr { .. } => 0x26,
+                Self::Idivi { .. } => 0x27,
+                Self::Umulr { .. } => 0x28,
+                Self::Umuli { .. } => 0x29,
+                Self::Udivr { .. } => 0x2A,
+                Self::Udivi { .. } => 0x2B,
+                Self::Remr { .. } => 0x2C,
+                Self::Remi { .. } => 0x2D,
+                Self::Modr { .. } => 0x2E,
+                Self::Modi { .. } => 0x2F,
+
+                Self::Andr { .. } => 0x30,
+                Self::Andi { .. } => 0x31,
+                Self::Orr { .. } => 0x32,
+                Self::Ori { .. } => 0x33,
+                Self::Norr { .. } => 0x34,
+                Self::Nori { .. } => 0x35,
+                Self::Xorr { .. } => 0x36,
+                Self::Xori { .. } => 0x37,
+                Self::Shlr { .. } => 0x38,
+                Self::Shli { .. } => 0x39,
+                Self::Asrr { .. } => 0x3A,
+                Self::Asri { .. } => 0x3B,
+                Self::Lsrr { .. } => 0x3C,
+                Self::Lsri { .. } => 0x3D,
+                Self::Bitr { .. } => 0x3E,
+                Self::Biti { .. } => 0x3F,
+
+                Self::Fcmp { .. } => 0x40,
+                Self::Fto { .. } => 0x41,
+                Self::Ffrom { .. } => 0x42,
+                Self::Fneg { .. } => 0x43,
+                Self::Fabs { .. } => 0x44,
+                Self::Fadd { .. } => 0x45,
+                Self::Fsub { .. } => 0x46,
+                Self::Fmul { .. } => 0x47,
+                Self::Fdiv { .. } => 0x48,
+                Self::Fma { .. } => 0x49,
+                Self::Fsqrt { .. } => 0x4A,
+                Self::Fmin { .. } => 0x4B,
+                Self::Fmax { .. } => 0x4C,
+                Self::Fsat { .. } => 0x4D,
+                Self::Fcnv { .. } => 0x4E,
+                Self::Fnan { .. } => 0x4F,
+            }
+        }
+        #[must_use]
+        pub const fn to_u32(self) -> u32 {
+            let opcode = self.opcode();
+            match self {
+                /* ONLY OPCODE */
+                Self::Ret | Self::Enter | Self::Leave => M::DFLT.to_u32(opcode),
+
+                /* F */
+                Self::Int { imm8 } => F { imm: imm8.0 as u16, func: Nibble::X0, ..F::DFLT }.to_u32(opcode),
+                Self::Iret => F { func: Nibble::X1, ..F::DFLT }.to_u32(opcode),
+                Self::Ires => F { func: Nibble::X2, ..F::DFLT }.to_u32(opcode),
+                Self::Usr { rd } => F { func: Nibble::X3, rde: rd.as_nibble(), ..F::DFLT }.to_u32(opcode),
+                Self::Li { rd, func, imm } => F { rde: rd.as_nibble(), func: func.to_nibble(), imm }.to_u32(opcode),
+                Self::Cmpi { r1, s, imm } => F { rde: r1.as_nibble(), func: Nibble::from_bool(s), imm }.to_u32(opcode),
+
+                /* M */
+                Self::Outr { rd, rs } | Self::Inr { rd, rs } => M { rde: rd.as_nibble(), rs1: rs.as_nibble(), ..M::DFLT }.to_u32(opcode),
+                Self::Outi { imm16, rs } => M { rs1: rs.as_nibble(), imm: imm16.0, ..M::DFLT }.to_u32(opcode),
+                Self::Ini { imm16, rd } => M { rde: rd.as_nibble(), imm: imm16.0, ..M::DFLT }.to_u32(opcode),
+                Self::Jal { rs, imm16 } => M { rs1: rs.as_nibble(), imm: imm16, ..M::DFLT }.to_u32(opcode),
+                Self::Jalr { rd, rs, imm16 } => M { rde: rd.as_nibble(), rs1: rs.as_nibble(), imm: imm16 }.to_u32(opcode),
+                Self::Retr { rs } | Self::Push { rs } => M { rs1: rs.as_nibble(), ..M::DFLT }.to_u32(opcode),
+                Self::Pop { rd } => M { rde: rd.as_nibble(), ..M::DFLT }.to_u32(opcode),
+                Self::Cmpr { r1, r2 } => M { rde: r1.as_nibble(), rs1: r2.as_nibble(), ..M::DFLT }.to_u32(opcode),
+                Self::Addi { rd, r1, imm16 }
+                | Self::Subi { rd, r1, imm16 }
+                | Self::Imuli { rd, r1, imm16 }
+                | Self::Idivi { rd, r1, imm16 }
+                | Self::Umuli { rd, r1, imm16 }
+                | Self::Udivi { rd, r1, imm16 }
+                | Self::Remi { rd, r1, imm16 }
+                | Self::Modi { rd, r1, imm16 }
+                | Self::Andi { rd, r1, imm16 }
+                | Self::Ori { rd, r1, imm16 }
+                | Self::Nori { rd, r1, imm16 }
+                | Self::Xori { rd, r1, imm16 }
+                | Self::Shli { rd, r1, imm16 }
+                | Self::Asri { rd, r1, imm16 }
+                | Self::Lsri { rd, r1, imm16 }
+                | Self::Biti { rd, r1, imm16 } => M { rde: rd.as_nibble(), rs1: r1.as_nibble(), imm: imm16 }.to_u32(opcode),
+
+                /* B */
+                Self::Branch { cc, imm20 } => B { func: cc.to_nibble(), imm: imm20 }.to_u32(opcode),
+
+                /* E */
+                Self::Lw { rd, rs, rn, sh, off }
+                | Self::Lh { rd, rs, rn, sh, off }
+                | Self::Lhs { rd, rs, rn, sh, off }
+                | Self::Lq { rd, rs, rn, sh, off }
+                | Self::Lqs { rd, rs, rn, sh, off }
+                | Self::Lb { rd, rs, rn, sh, off }
+                | Self::Lbs { rd, rs, rn, sh, off }
+                | Self::Sw { rd, rs, rn, sh, off }
+                | Self::Sh { rd, rs, rn, sh, off }
+                | Self::Sq { rd, rs, rn, sh, off }
+                | Self::Sb { rd, rs, rn, sh, off } => {
+                    E { rde: rd.as_nibble(), rs1: rs.as_nibble(), rs2: rn.as_nibble(), func: sh, imm: off }.to_u32(opcode)
+                }
+                Self::Fcmp { r1, r2, p } => E { rs1: r1.as_nibble(), rs2: r2.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode),
+                Self::Fto { rd, rs, p } | Self::Ffrom { rd, rs, p } | Self::Fneg { rd, rs, p } | Self::Fabs { rd, rs, p } => {
+                    E { rde: rd.as_nibble(), rs1: rs.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode)
+                }
+                Self::Fadd { rd, r1, r2, p }
+                | Self::Fsub { rd, r1, r2, p }
+                | Self::Fmul { rd, r1, r2, p }
+                | Self::Fdiv { rd, r1, r2, p }
+                | Self::Fma { rd, r1, r2, p }
+                | Self::Fmin { rd, r1, r2, p }
+                | Self::Fmax { rd, r1, r2, p } => {
+                    E { rde: rd.as_nibble(), rs1: r1.as_nibble(), rs2: r2.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode)
+                }
+                Self::Fsqrt { rd, r1, p } | Self::Fsat { rd, r1, p } | Self::Fnan { rd, r1, p } => {
+                    E { rde: rd.as_nibble(), rs1: r1.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode)
+                }
+                Self::Fcnv { rd, r1, p } => E { rde: rd.as_nibble(), rs1: r1.as_nibble(), func: p.to_nibble(), ..E::DFLT }.to_u32(opcode),
+
+                /* R */
+                Self::Addr { rd, r1, r2 }
+                | Self::Subr { rd, r1, r2 }
+                | Self::Imulr { rd, r1, r2 }
+                | Self::Idivr { rd, r1, r2 }
+                | Self::Umulr { rd, r1, r2 }
+                | Self::Udivr { rd, r1, r2 }
+                | Self::Remr { rd, r1, r2 }
+                | Self::Modr { rd, r1, r2 }
+                | Self::Andr { rd, r1, r2 }
+                | Self::Orr { rd, r1, r2 }
+                | Self::Norr { rd, r1, r2 }
+                | Self::Xorr { rd, r1, r2 }
+                | Self::Shlr { rd, r1, r2 }
+                | Self::Asrr { rd, r1, r2 }
+                | Self::Lsrr { rd, r1, r2 }
+                | Self::Bitr { rd, r1, r2 } => R { rde: rd.as_nibble(), rs1: r1.as_nibble(), rs2: r2.as_nibble(), ..R::DFLT }.to_u32(opcode),
+            }
+        }
+        #[must_use]
+        pub const fn to_instruction(self) -> Instruction { Instruction(self.to_u32()) }
     }
     impl Display for InstructionSet {
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
