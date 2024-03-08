@@ -240,8 +240,8 @@ pub mod encoding {
     }
 }
 
-#[allow(clippy::module_name_repetitions)]
 pub mod instruction_set {
+    #![allow(clippy::module_name_repetitions)]
     /*!
     # Instruction Set
     */
