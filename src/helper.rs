@@ -19,7 +19,10 @@ pub const fn sign_extend<const BIT_SIZE: u8>(val: u64) -> u64 {
 pub mod ops {
     //! Operations
     use super::option_u64;
-    use crate::{instruction::instruction_set::FloatPrecision, nibble::Nibble};
+    use crate::{
+        instruction::instruction_set::{FloatCastType, FloatPrecision},
+        nibble::Nibble,
+    };
     pub use half::f16;
 
     #[derive(Debug, Clone, Copy)]
@@ -42,11 +45,7 @@ pub mod ops {
         }
         let (result, unsigned_overflow) = carrying_add_u(a, b, carry);
         let (_, signed_overflow) = carrying_add_i(a, b, carry);
-        AddResult {
-            result,
-            unsigned_overflow,
-            signed_overflow,
-        }
+        AddResult { result, unsigned_overflow, signed_overflow }
     }
     #[must_use]
     pub const fn sub(a: u64, b: u64, carry: bool) -> AddResult {
@@ -62,11 +61,7 @@ pub mod ops {
         }
         let (result, unsigned_overflow) = carrying_sub_u(a, b, carry);
         let (_, signed_overflow) = carrying_sub_i(a, b, carry);
-        AddResult {
-            result,
-            unsigned_overflow,
-            signed_overflow,
-        }
+        AddResult { result, unsigned_overflow, signed_overflow }
     }
 
     #[must_use]
@@ -333,6 +328,40 @@ pub mod ops {
             fn fsat(self, a: u64) -> u64;
             #[must_use]
             fn fnan(self, a: u64) -> u64;
+        }
+    }
+
+    impl FloatCastType {
+        #[must_use]
+        #[allow(clippy::cast_lossless)]
+        #[allow(clippy::cast_possible_truncation)]
+        pub fn cast(self, a: u64) -> u64 {
+            match self.from {
+                FloatPrecision::F16 => {
+                    let from = <f16 as Float>::from_u64(a);
+                    match self.to {
+                        FloatPrecision::F16 => a,
+                        FloatPrecision::F32 => from.to_f32().to_u64(),
+                        FloatPrecision::F64 => from.to_f64().to_u64(),
+                    }
+                }
+                FloatPrecision::F32 => {
+                    let from = <f32 as Float>::from_u64(a);
+                    match self.to {
+                        FloatPrecision::F16 => f16::from_f32(from).to_u64(),
+                        FloatPrecision::F32 => a,
+                        FloatPrecision::F64 => (from as f64).to_u64(),
+                    }
+                }
+                FloatPrecision::F64 => {
+                    let from = <f64 as Float>::from_u64(a);
+                    match self.to {
+                        FloatPrecision::F16 => f16::from_f64(from).to_u64(),
+                        FloatPrecision::F32 => (from as f32).to_u64(),
+                        FloatPrecision::F64 => a,
+                    }
+                }
+            }
         }
     }
 }
