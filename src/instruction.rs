@@ -668,6 +668,8 @@ pub mod instruction_set {
     }
     impl InstructionSet {
         #[must_use]
+        #[allow(clippy::inline_always)]
+        #[inline(always)]
         #[allow(clippy::too_many_lines)]
         pub fn try_from_instruction(i: Instruction) -> Option<Self> {
             let res = match i.opcode() {
@@ -1033,6 +1035,8 @@ pub mod instruction_set {
         pub const fn to_instruction(self) -> Instruction { Instruction(self.to_u32()) }
     }
     impl Display for InstructionSet {
+        #[allow(clippy::inline_always)]
+        #[inline(always)]
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
                 Self::Int { imm8 } => write!(f, "int {}", imm8.0),
