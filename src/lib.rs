@@ -7,11 +7,11 @@
 TODO: put some good documentation thats not just copy pasted from the typst doc...
 */
 
-pub mod registers;
-pub mod nibble;
 pub mod instruction;
 pub mod interrupt;
 pub mod io;
+pub mod nibble;
+pub mod registers;
 // TODO: useful operations here
 pub mod helper;
 
