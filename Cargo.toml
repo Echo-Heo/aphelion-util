@@ -8,7 +8,7 @@ license = "MIT"
 keywords = ["aphelion"]
 categories = ["emulators", "compilers"]
 exclude = ["/rustfmt.toml"]
-repository = "https://github.com/Echo-Heo/aphelion-util"
+repository = "https://github.com/orbit-systems/aphelion-util"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
