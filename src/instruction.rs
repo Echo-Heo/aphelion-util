@@ -1374,6 +1374,7 @@ pub mod instruction_set {
                 Self::Fnan { .. } => 0x4F,
             }
         }
+        #[allow(clippy::too_many_lines)]
         #[must_use]
         pub const fn to_u32(self) -> u32 {
             let opcode = self.opcode();
@@ -1657,7 +1658,7 @@ pub mod instruction_set {
         }
     }
     impl Display for InstructionSet {
-        #[allow(clippy::inline_always)]
+        #[allow(clippy::inline_always, clippy::too_many_lines)]
         #[inline(always)]
         fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             match self {
