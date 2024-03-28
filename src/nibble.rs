@@ -2,6 +2,7 @@
 //! module for the [`Nibble`] type
 
 use std::fmt::{Binary, Debug, Display, LowerExp, LowerHex, Octal, UpperExp, UpperHex};
+
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 /// 4-bit unsigned integer type
 pub enum Nibble {
@@ -23,6 +24,7 @@ pub enum Nibble {
     XE = 0xE,
     XF = 0xF,
 }
+
 impl Nibble {
     /// Attempt to convert a [`u8`] to [`Nibble`]
     ///
@@ -55,6 +57,7 @@ impl Nibble {
             _ => None,
         }
     }
+
     /// Convert the lower 4 bits of a [`u8`] to [`Nibble`]
     ///
     /// # Examples
@@ -86,6 +89,7 @@ impl Nibble {
             _ => unreachable!(),
         }
     }
+
     /// Convert the upper 4 bits of a [`u8`] to [`Nibble`]
     ///
     /// # Examples
@@ -117,6 +121,7 @@ impl Nibble {
             _ => unreachable!(),
         }
     }
+
     /// Converts [`Nibble`] to [`u8`]
     ///
     /// # Examples
@@ -130,6 +135,7 @@ impl Nibble {
     pub const fn to_u8(self) -> u8 {
         self as u8
     }
+
     /// Converts [`Nibble`] to [`u8`], bit shifted right by 4.
     ///
     /// # Examples
@@ -162,6 +168,7 @@ impl Nibble {
     pub const fn to_bool(self) -> bool {
         !matches!(self, Self::X0)
     }
+
     #[must_use]
     pub const fn from_bool(v: bool) -> Self {
         if v {
@@ -171,48 +178,56 @@ impl Nibble {
         }
     }
 }
+
 #[doc(hidden)]
 impl Debug for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", *self as u8)
     }
 }
+
 #[doc(hidden)]
 impl Display for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", *self as u8)
     }
 }
+
 #[doc(hidden)]
 impl Binary for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:b}", *self as u8)
     }
 }
+
 #[doc(hidden)]
 impl LowerExp for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:e}", *self as u8)
     }
 }
+
 #[doc(hidden)]
 impl UpperExp for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:E}", *self as u8)
     }
 }
+
 #[doc(hidden)]
 impl LowerHex for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:x}", *self as u8)
     }
 }
+
 #[doc(hidden)]
 impl UpperHex for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:X}", *self as u8)
     }
 }
+
 #[doc(hidden)]
 impl Octal for Nibble {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
