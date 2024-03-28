@@ -68,27 +68,35 @@ pub struct Interrupt(pub u8);
 impl Interrupt {
     /// Triggers when the second argument of a div, mod, or rem instruction is zero
     pub const DIVIDE_BY_ZERO: Self = Interrupt(0x00);
+
     /// Reserved for debugger breakpoints
     pub const BREAK_POINT: Self = Interrupt(0x01);
+
     /// Triggers when some kind of restricted or invalid operation occurs.
     /// This includes unrecognized opcode, unrecognized secondary function values,
     /// or when a restricted instruction is encountered /
     /// modification of a restricted register is attempted in user mode
     pub const INVALID_OPERATION: Self = Interrupt(0x02);
+
     /// Triggers when sp > fp, which means a stack underflow has occurred
     pub const STACK_UNDERFLOW: Self = Interrupt(0x03);
+
     /// Memory has been accessed across type width boundaries
     pub const UNALIGNED_ACCESS: Self = Interrupt(0x04);
+
     /// Memory has been accessed in an invalid way: In kernel mode,
     /// this triggers due to accesses outside physical memory bounds.
     /// In user mode, this triggers when unmapped / invalid memory is
     /// accessed or when virtual memory permissions do not allow the access
     pub const ACCESS_VIOLATION: Self = Interrupt(0x05);
+
     /// Interrupt controller has experienced an interrupt queue overflow,
     /// meaning too many interrupts have triggered in a certain time
     pub const INTERRUPT_OVERFLOW: Self = Interrupt(0x06);
 }
+
 impl Interrupt {
+    /// Checks if the interrupt is reserved by the Aphelion ISA.
     #[must_use]
     pub const fn is_reserved(self) -> bool {
         matches!(
@@ -102,6 +110,7 @@ impl Interrupt {
                 | Self::INTERRUPT_OVERFLOW
         )
     }
+
     #[must_use]
     pub const fn try_from_u16(value: u16) -> Option<Self> {
         match value.to_le_bytes() {
@@ -110,6 +119,7 @@ impl Interrupt {
         }
     }
 }
+
 impl Display for Interrupt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {
