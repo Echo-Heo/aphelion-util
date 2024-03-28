@@ -128,6 +128,7 @@ pub enum Register {
     /// [Status Register](crate::registers#st--status-register)
     St = 0xF,
 }
+
 impl Register {
     /// Convert a [`Register`] to [`u8`]
     ///
@@ -175,6 +176,7 @@ impl Register {
             _ => None,
         }
     }
+
     #[must_use]
     pub const fn from_nibble(v: Nibble) -> Self {
         match v {
@@ -196,6 +198,7 @@ impl Register {
             Nibble::XF => Self::St,
         }
     }
+
     #[must_use]
     pub const fn to_nibble(self) -> Nibble {
         match self {
@@ -217,6 +220,7 @@ impl Register {
             Self::St => Nibble::XF,
         }
     }
+
     const fn string(self) -> &'static str {
         match self {
             Self::Rz => "rz",
@@ -238,6 +242,7 @@ impl Register {
         }
     }
 }
+
 impl Display for Register {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.string())
